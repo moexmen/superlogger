@@ -1,4 +1,4 @@
-Superlogger - Machine-readable logging for Rails
+Superlogger - Machine-readable logging for Rails [![Build Status](https://travis-ci.org/moexmen/superlogger.svg?branch=master)](https://travis-ci.org/moexmen/superlogger)
 =======
 
 Rails' default request logging is easy to read for humans but difficult for log aggregators such as Kibana, Graylog and Splunk. Superlogger transforms the logs into key-value pairs for easy parsing and adds useful details like Timestamp and Session ID for tracing purposes.
