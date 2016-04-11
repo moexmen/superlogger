@@ -2,6 +2,8 @@ PATH
   remote: .
   specs:
     superlogger (0.0.1)
+      rails
+      request_store
 
 GEM
   remote: https://rubygems.org/
@@ -108,8 +110,6 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
-  rails
-  request_store
   sqlite3
   superlogger!
 

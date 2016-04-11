@@ -10,9 +10,6 @@ gemspec
 # Git. Remember to move these dependencies to your gemspec before releasing
 # your gem to rubygems.org.
 
-gem 'rails'
-gem 'request_store'
-
 group :development, :test do
   gem 'byebug'
   gem 'sqlite3'
