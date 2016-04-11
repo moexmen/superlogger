@@ -18,7 +18,7 @@ Started GET "/assets/application.self-e80e8f2318043e8af94dddc2adad5a4f09739a8ebb
 Started GET "/assets/application.self-8f06a73c35179188914ab50e057157639fce1401c1cdca640ac9cec33746fc5b.js?body=1" for ::1 at 2016-04-11 16:23:27 +0800
 ```
 
-Machine-readable logging with Superlogger
+Machine-readable logging with Superlogger:
 ```sh
 2016-04-11 16:18:22.279 | b48534ea049a | I | middleware:28 | method=GET | path=/home/index | ip=::1
 2016-04-11 16:18:22.293 | b48534ea049a | D | action_controller_log_subscriber:9 | controller=HomeController | action=index | params={}
@@ -28,30 +28,6 @@ Machine-readable logging with Superlogger
 2016-04-11 16:18:22.541 | b48534ea049a | I | action_controller_log_subscriber:29 | status=200 | total_duration=247.16 | view_duration=235.25 | db_duration=0.78
 ```
 
-## Getting Started ##
-
-1. In your Gemfile
-
-    ```ruby
-    gem "superlogger"
-    ```
-
-2. That is all you need to do to transform the default logging.
-
-3. To log extra stuff, pass a hash to the logger
-
-    ```ruby
-    require 'superlogger'
-
-    class SomeClass
-        include Superlogger
-
-        def some_method
-            Logger.info name:'john', age: '21'
-        end
-    end
-    ```
-
 ## Features ##
 - Timestamp (milliseconds)
 - Session ID for logs across requests
@@ -59,6 +35,38 @@ Machine-readable logging with Superlogger
 - Muting of assets logging
 - File and line numbers
 - Recording of IP address
+
+## Installation ##
+
+Add superlogger to your application's Gemfile
+
+```ruby
+gem "superlogger"
+```
+
+And then execute:
+
+```sh
+$ bundle
+```
+
+## Usage ##
+
+```ruby
+require 'superlogger'
+
+class SomeClass
+    include Superlogger
+
+    def some_method
+        Logger.debug name:'john', age: '21'
+        Logger.info name:'john', age: '21'
+        Logger.warn name:'john', age: '21'
+        Logger.error name:'john', age: '21'
+        Logger.fatal name:'john', age: '21'
+    end
+end
+```
 
 ## Output Format ##
 ```sh
@@ -72,12 +80,3 @@ Machine-readable logging with Superlogger
 - **W** - Warn
 - **E** - Error
 - **F** - Fatal
-
-## Methods ##
-```ruby
-Logger.debug name:'john', age: '21'
-Logger.info name:'john', age: '21'
-Logger.warn name:'john', age: '21'
-Logger.error name:'john', age: '21'
-Logger.fatal name:'john', age: '21'
-```
