@@ -84,7 +84,7 @@ class SuperloggerTest < ActiveSupport::TestCase
 
   test 'without session_id' do
     Superlogger::Logger.debug var: 'test'
-    assert_match(/NS-[[:alnum:]]{9}/, output[0][1])
+    assert_match(/NS-[[:alnum:]]+/, output[0][1])
   end
 
   test 'with session_id' do
