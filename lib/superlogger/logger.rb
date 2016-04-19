@@ -73,6 +73,7 @@ class Logger
     timestamp = time.strftime('%Y-%m-%d %H:%M:%S.%L')
     session_id = Superlogger::Logger.session_id[0..11]
     severity = severity.to_s.upcase[0]
+    msg.to_s.gsub!("\n", '\\n') # escape newlines
 
     "#{timestamp} | #{session_id} | #{severity} | #{msg}\n"
   end
