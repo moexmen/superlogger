@@ -131,4 +131,10 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert_match(/duration=\d.\d/, fields[6])
     assert_operator fields[6].split('=').last.to_f, :>, 0
   end
+
+   test 'escape new lines' do
+     Superlogger::Logger.debug var: 'first\nsecond'
+
+     assert_match 'first\\nsecond', output[0].last
+   end
 end
