@@ -11,38 +11,37 @@ module Superlogger
     end
 
     def self.debug(*args)
-      Rails.logger.debug { format_msg(args) }
+      Rails.logger.debug { format_args(args) }
     end
 
     def self.info(*args)
-      Rails.logger.info { format_msg(args) }
+      Rails.logger.info { format_args(args) }
     end
 
     def self.warn(*args)
-      Rails.logger.warn { format_msg(args) }
+      Rails.logger.warn { format_args(args) }
     end
 
     def self.error(*args)
-      Rails.logger.error { format_msg(args) }
+      Rails.logger.error { format_args(args) }
     end
 
     def self.fatal(*args)
-      Rails.logger.fatal { format_msg(args) }
+      Rails.logger.fatal { format_args(args) }
     end
 
     private
-
-    def self.format_msg(args)
-      "#{get_caller_location} | #{format_args(args)}"
-    end
 
     def self.get_caller_location
       # Find the last method call on Superlogger::Logger
       count = 0
       location_index = caller_locations(0).find_index do |location|
-        count += 1 if location && location.path.include?('superlogger/logger.rb')
-        count == 4
+        count += 1 if location.try(:path).include?('superlogger/logger.rb')
+        count == 3
       end
+
+      # If Superlogger::Logger is not called directly
+      location_index ||= 5
 
       # Add 1 to get the caller of the logger
       location = caller_locations(location_index + 1).first
@@ -73,8 +72,9 @@ class Logger
     timestamp = time.strftime('%Y-%m-%d %H:%M:%S.%L')
     session_id = Superlogger::Logger.session_id[0..11]
     severity = severity.to_s.upcase[0]
+    caller_line = Superlogger::Logger.get_caller_location
     msg.to_s.gsub!("\n", '\\n') # escape newlines
 
-    "#{timestamp} | #{session_id} | #{severity} | #{msg}\n"
+    "#{timestamp} | #{session_id} | #{severity} | #{caller_line} | #{msg}\n"
   end
 end
