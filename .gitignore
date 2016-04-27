@@ -9,4 +9,4 @@ test/dummy/.sass-cache
 test/dummy/.byebug_history
 .idea
 .byebug_history
-.Gemfile.lock
+Gemfile.lock
