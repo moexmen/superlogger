@@ -46,7 +46,11 @@ module Superlogger
                  args.to_s
                end
 
-      output.gsub("\n", '\\n') # Escape newlines
+      if Rails.application.config.superlogger.squished
+        output.squish
+      else
+        output.gsub("\n", '\\n') # Escape newlines
+      end
     end
 
     # To silence double logging when running `rails server` in development mode

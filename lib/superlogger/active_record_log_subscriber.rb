@@ -13,7 +13,7 @@ module Superlogger
     def sql(event)
       self.class.runtime += event.duration
 
-      return if Rails.env.production?
+      return unless Rails.application.config.superlogger.sql_enabled
 
       payload = event.payload
       return if IGNORE_PAYLOAD_NAMES.include?(payload[:name])

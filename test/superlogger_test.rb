@@ -10,6 +10,7 @@ class SuperloggerTest < ActiveSupport::TestCase
     Dummy::Application.configure do
       # Set to true so that routing error will not raise error in test
       config.action_dispatch.show_exceptions = true
+      config.superlogger.sql_enabled = true
     end
   end
 
@@ -156,9 +157,28 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert_operator fields[7].split('=').last.to_f, :>, 0
   end
 
+  test 'disable sql' do
+    Dummy::Application.configure do
+      config.superlogger.sql_enabled = false
+    end
+    request('home/index')
+
+    fields = output[2]
+    assert_no_match 'sql=SELECT', fields[5]
+  end
+
   test 'escape new lines' do
     Rails.logger.debug var: 'first\nsecond'
 
     assert_match 'first\\nsecond', output[0].last
+  end
+
+  test 'squish whitespace' do
+    Dummy::Application.configure do
+      config.superlogger.squished = true
+    end
+    Rails.logger.debug var: "first\n\n    \n second   \t \t  third"
+
+    assert_match 'first second third', output[0].last
   end
 end

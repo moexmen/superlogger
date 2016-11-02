@@ -48,7 +48,7 @@ Machine-readable logging with Superlogger:
 - Request ID for logs belonging to the same page request (notice above that each request have a different request id)
 - Hashes will be logged as key-value pairs automatically
 - Requests for assets will not be logged
-- File and line numbers 
+- File and line numbers
 - IP address of request
 
 ## Installation ##
@@ -66,6 +66,12 @@ $ bundle
 And add the following in `config/application.rb`
 ```ruby
 config.logger = Superlogger::Logger.new(STDOUT)
+
+# enable logging of ActiveRecord messages (default: false)
+config.superlogger.sql_enabled = true
+
+# replace consecutive whitespace with a single space (default: false)
+config.superlogger.squished = true
 ```
 
 ## Usage ##
