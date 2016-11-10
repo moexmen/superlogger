@@ -6,13 +6,9 @@ matrix:
   fast_finish: true
   include:
   - rvm: 2.1.8
-    gemfile: Gemfile-rails4
+    env: "RAILS_VERSION=4"
   - rvm: 2.2.4
-    gemfile: Gemfile
   - rvm: 2.3.0
-    gemfile: Gemfile
   - rvm: ruby-head
-    gemfile: Gemfile
-
 bundler_args: "--jobs=3 --retry=3 --without development:production"
 cache: bundler
