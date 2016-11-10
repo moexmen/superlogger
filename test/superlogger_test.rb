@@ -93,13 +93,23 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert_no_match 'Started GET', output[0][5]
   end
 
-  test 'middleware' do
+  test 'middleware start' do
     request('home/index', 'REMOTE_ADDR' => '::1')
 
     fields = output[0]
     assert_match 'method=GET', fields[5]
     assert_match 'path=/home/index', fields[6]
     assert_match 'ip=::1', fields[7]
+  end
+
+  test 'middleware end' do
+    request('home/index', 'REMOTE_ADDR' => '::1')
+
+    fields = output.last
+    assert_match 'method=GET', fields[5]
+    assert_match 'path=/home/index', fields[6]
+    assert_match(/total_duration=\d.\d/, fields[7])
+    assert_operator fields[7].split('=').last.to_f, :>, 0
   end
 
   test 'action_controller_log_subscriber.start_processing' do
@@ -114,7 +124,7 @@ class SuperloggerTest < ActiveSupport::TestCase
   test 'action_controller_log_subscriber.process_action' do
     request('home/index')
 
-    fields = output.last
+    fields = output[5]
     assert_match 'status=200', fields[5]
     assert_match(/total_duration=\d.\d/, fields[6])
     assert_operator fields[6].split('=').last.to_f, :>, 0

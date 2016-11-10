@@ -32,12 +32,14 @@ Machine-readable logging with Superlogger:
 2016-04-29 17:29:45.861 | 12dc0e484869 | 68d63a8cf920 | D | action_view_log_subscriber:6 | view=_partial.html.erb | duration=0.2
 2016-04-29 17:29:45.861 | 12dc0e484869 | 68d63a8cf920 | D | action_view_log_subscriber:6 | view=index.html.erb | duration=3.2
 2016-04-29 17:29:45.983 | 12dc0e484869 | 68d63a8cf920 | I | action_controller_log_subscriber:29 | status=200 | total_duration=135.92 | view_duration=130.38 | db_duration=0.33
+2016-04-29 17:29:45.983 | 12dc0e484869 | 68d63a8cf920 | I | superlogger_middleware:30 | method=GET | path=/home/index | total_duration=135.92
 
 # second request
 2016-04-29 17:39:54.879 | 12dc0e484869 | e463d380fb63 | I | superlogger_middleware:30 | method=GET | path=/home/show | ip=::1
 2016-04-29 17:39:54.879 | 12dc0e484869 | e463d380fb63 | D | action_controller_log_subscriber:9 | controller=HomeController | action=show | params={}
 2016-04-29 17:39:54.882 | 12dc0e484869 | e463d380fb63 | D | action_view_log_subscriber:6 | view=show.html.erb | duration=0.2
 2016-04-29 17:39:54.884 | 12dc0e484869 | e463d380fb63 | I | action_controller_log_subscriber:29 | status=200 | total_duration=4.64 | view_duration=4.55 | db_duration=0.0
+2016-04-29 17:39:54.884 | 12dc0e484869 | e463d380fb63 | I | superlogger_middleware:30 | method=GET | path=/home/index | total_duration=4.64
 ```
 
 ## Features ##
