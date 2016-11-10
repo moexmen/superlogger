@@ -56,17 +56,17 @@ class SuperloggerTest < ActiveSupport::TestCase
 
   test 'without session_id' do
     Rails.logger.debug var: 'test'
-    assert_match(/NS-[[:alnum:]]+/, output[0][1])
+    assert_match(/^NS-[[:alnum:]]+$/, output[0][1])
   end
 
   test 'with request_id' do
     request('home/index')
-    assert_no_match(/NR-[[:alnum:]]+/, output[0][2])
+    assert_no_match(/^NR-[[:alnum:]]+$/, output[0][2])
   end
 
   test 'without request_id' do
     Rails.logger.debug var: 'test'
-    assert_match(/NR-[[:alnum:]]+/, output[0][2])
+    assert_match(/^NR-[[:alnum:]]+$/, output[0][2])
   end
 
   test 'log levels' do
@@ -108,7 +108,7 @@ class SuperloggerTest < ActiveSupport::TestCase
     fields = output.last
     assert_match 'method=GET', fields[5]
     assert_match 'path=/home/index', fields[6]
-    assert_match(/total_duration=\d.\d/, fields[7])
+    assert_match(/^total_duration=\d+.\d+$/, fields[7])
     assert_operator fields[7].split('=').last.to_f, :>, 0
   end
 
@@ -126,11 +126,11 @@ class SuperloggerTest < ActiveSupport::TestCase
 
     fields = output[5]
     assert_match 'status=200', fields[5]
-    assert_match(/total_duration=\d.\d/, fields[6])
+    assert_match(/^total_duration=\d+.\d+$/, fields[6])
     assert_operator fields[6].split('=').last.to_f, :>, 0
-    assert_match(/view_duration=\d.\d/, fields[7])
+    assert_match(/^view_duration=\d+.\d+$/, fields[7])
     assert_operator fields[7].split('=').last.to_f, :>, 0
-    assert_match(/db_duration=\d.\d/, fields[8])
+    assert_match(/^db_duration=\d+.\d+$/, fields[8])
     assert_operator fields[8].split('=').last.to_f, :>, 0
   end
 
@@ -152,7 +152,7 @@ class SuperloggerTest < ActiveSupport::TestCase
     fields = output[2]
     assert_match 'sql=SELECT', fields[5]
     assert_match 'params=[', fields[6]
-    assert_match(/duration=\d.\d/, fields[7])
+    assert_match(/^duration=\d+.\d+$/, fields[7])
     assert_operator fields[7].split('=').last.to_f, :>, 0
   end
 
