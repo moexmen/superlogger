@@ -41,7 +41,7 @@ module Superlogger
         Superlogger.session_id = request.env['rack.session'].id
       end
 
-      Superlogger.request_id = request.uuid.gsub('-', '')
+      Superlogger.request_id = request.uuid.try(:gsub, '-', '')
     end
   end
 end
