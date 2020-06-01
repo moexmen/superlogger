@@ -17,11 +17,6 @@ Gem::Specification.new do |s|
   s.files = Dir["{lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["test/**/*"]
 
-  if ENV['RAILS_VERSION'] == '4'
-    s.add_dependency 'rails', '~> 4.0'
-  else
-    s.add_dependency 'rails'
-  end
-
+  s.add_dependency 'rails'
   s.add_dependency 'request_store'
 end

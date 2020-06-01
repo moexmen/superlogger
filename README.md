@@ -5,7 +5,7 @@
 Superlogger - Machine-readable logging for Rails
 =======
 
-Rails' default request logging is easy to read for humans but difficult for log aggregators such as Kibana, Graylog and Splunk. Superlogger transforms the logs into key-value pairs for easy parsing and adds useful details like Timestamp, Session ID and Request ID for tracing purposes.
+Rails' default request logging is easy to read for humans but difficult for log aggregators such as Kibana, Graylog and Splunk. Superlogger transforms the logs into JSON for easy parsing and adds useful details like Timestamp, Session ID and Request ID for tracing purposes.
 
 Default rails logging:
 ```sh
@@ -23,33 +23,17 @@ Started GET "/assets/application.self-8f06a73c35179188914ab50e057157639fce1401c1
 
 ```
 
-Machine-readable logging with Superlogger:
+With Superlogger:
 ```sh
-# first request
-2016-04-29 17:29:45.841 | 12dc0e484869 | 68d63a8cf920 | I | superlogger_middleware:30 | method=GET | path=/home/index | ip=::1
-2016-04-29 17:29:45.847 | 12dc0e484869 | 68d63a8cf920 | D | action_controller_log_subscriber:9 | controller=HomeController | action=index | params={}
-2016-04-29 17:29:45.852 | 12dc0e484869 | 68d63a8cf920 | D | active_record_log_subscriber:24 | sql=SELECT  "somethings".* FROM "somethings" WHERE "somethings"."paper" = ? AND "somethings"."stone" = ?  ORDER BY "somethings"."id" ASC LIMIT 1 | params=["123", "456"] | duration=0.13
-2016-04-29 17:29:45.861 | 12dc0e484869 | 68d63a8cf920 | D | action_view_log_subscriber:6 | view=_partial.html.erb | duration=0.2
-2016-04-29 17:29:45.861 | 12dc0e484869 | 68d63a8cf920 | D | action_view_log_subscriber:6 | view=index.html.erb | duration=3.2
-2016-04-29 17:29:45.983 | 12dc0e484869 | 68d63a8cf920 | I | action_controller_log_subscriber:29 | status=200 | total_duration=135.92 | view_duration=130.38 | db_duration=0.33
-2016-04-29 17:29:45.983 | 12dc0e484869 | 68d63a8cf920 | I | superlogger_middleware:30 | method=GET | path=/home/index | total_duration=135.92
-
-# second request
-2016-04-29 17:39:54.879 | 12dc0e484869 | e463d380fb63 | I | superlogger_middleware:30 | method=GET | path=/home/show | ip=::1
-2016-04-29 17:39:54.879 | 12dc0e484869 | e463d380fb63 | D | action_controller_log_subscriber:9 | controller=HomeController | action=show | params={}
-2016-04-29 17:39:54.882 | 12dc0e484869 | e463d380fb63 | D | action_view_log_subscriber:6 | view=show.html.erb | duration=0.2
-2016-04-29 17:39:54.884 | 12dc0e484869 | e463d380fb63 | I | action_controller_log_subscriber:29 | status=200 | total_duration=4.64 | view_duration=4.55 | db_duration=0.0
-2016-04-29 17:39:54.884 | 12dc0e484869 | e463d380fb63 | I | superlogger_middleware:30 | method=GET | path=/home/index | total_duration=4.64
+{"level":"debug","ts":1590972589.522784,"caller":"superlogger/active_record_log_subscriber:21","sql":"SELECT \"schema_migrations\".\"version\" FROM \"schema_migrations\" ORDER BY \"schema_migrations\".\"version\" ASC","params":[],"duration":0.13}
+{"level":"info","ts":1590972589.526133,"caller":"superlogger/superlogger_middleware:21","session_id":"90e90c75c72c","request_id":"34432478c89b4d8591e02e0169b40a56","method":"GET","path":"/home/index"}
+{"level":"debug","ts":1590972589.546272,"caller":"superlogger/action_controller_log_subscriber:8","session_id":"90e90c75c72c","request_id":"34432478c89b4d8591e02e0169b40a56","controller":"HomeController","action":"index","params":{}}
+{"level":"debug","ts":1590972589.55092,"caller":"superlogger/active_record_log_subscriber:21","session_id":"90e90c75c72c","request_id":"34432478c89b4d8591e02e0169b40a56","sql":"SELECT  \"somethings\".* FROM \"somethings\" WHERE \"somethings\".\"paper\" = ? AND \"somethings\".\"stone\" = ? ORDER BY \"somethings\".\"id\" ASC LIMIT ?","params":["123","456","1"],"duration":0.22}
+{"level":"debug","ts":1590972589.574199,"caller":"superlogger/action_view_log_subscriber:6","session_id":"90e90c75c72c","request_id":"34432478c89b4d8591e02e0169b40a56","view":"_partial.html.erb","duration":0.33}
+{"level":"debug","ts":1590972589.574795,"caller":"superlogger/action_view_log_subscriber:6","session_id":"90e90c75c72c","request_id":"34432478c89b4d8591e02e0169b40a56","view":"index.html.erb","duration":2.95}
+{"level":"info","ts":1590972589.61165,"caller":"superlogger/action_controller_log_subscriber:20","session_id":"90e90c75c72c","request_id":"34432478c89b4d8591e02e0169b40a56","view_duration":54.59,"db_duration":0.85}
+{"level":"info","ts":1590972589.611928,"caller":"superlogger/superlogger_middleware:30","session_id":"90e90c75c72c","request_id":"34432478c89b4d8591e02e0169b40a56","method":"GET","path":"/home/index","response_time":85.65,"status":200}
 ```
-
-## Features ##
-- Timestamp (milliseconds)
-- Session ID for logs belonging to the same user session (notice above that both the requests have the same session id)
-- Request ID for logs belonging to the same page request (notice above that each request have a different request id)
-- Hashes will be logged as key-value pairs automatically
-- Requests for assets will not be logged
-- File and line numbers 
-- IP address of request
 
 ## Installation ##
 
@@ -63,9 +47,14 @@ Execute:
 $ bundle
 ```
 
-And add the following in `config/application.rb`
+And add the following in `config/environment/production.rb`
 ```ruby
 config.logger = Superlogger::Logger.new(STDOUT)
+```
+
+By default, Superlogger is only enabled in production environment because JSON is easy for machines to parse but difficult for humans to read. To forcefully enable Superlogger in non-production environment, set in `config/application.rb`:
+```ruby
+Superlogger.enabled = true
 ```
 
 ## Usage ##
@@ -73,27 +62,13 @@ config.logger = Superlogger::Logger.new(STDOUT)
 Log as per normal using `Rails.logger`.
 
 ```ruby
-class SomeClass
-    def some_method
-        Rails.logger.debug foo:'true', bar: 'false'
-        Rails.logger.info foo:'true', bar: 'false'
-        Rails.logger.warn foo:'true', bar: 'false'
-        Rails.logger.error foo:'true', bar: 'false'
-        Rails.logger.fatal foo:'true', bar: 'false'
-    end
-end
+Rails.logger.info foo:'true', bar: 'false'
+Rails.logger.info "Meatball"
 ```
 
 ## Log Format ##
-```sh
-2015-03-26 23:37:38.086 | 12dc0e484869   | e463d380fb63   | I            | action_controller_log_subscriber:29 | status=200 | total_duration=4.64 | view_duration=4.55 | db_duration=0.0
-< timestamp >           | < session id > | < request id > | < severity > | < file >:< line num >               | < data you pass in ... >
-< 23 chars >            | < 12 chars >   | <12 chars >    | < 1 char >   | < ? chars >                         | < ? chars >
-```
-
-### Severity Levels ###
-- **D** - Debug
-- **I** - Info
-- **W** - Warn
-- **E** - Error
-- **F** - Fatal
+- `ts` = Unix Epoch timestamp
+- `session_id` = Truncated to 12 characters
+- `request_id` = 32 characters
+- `msg` = If values given is not a hash, it is treated as `{"msg":<value>"}`
+- All duration related fields are in milliseconds

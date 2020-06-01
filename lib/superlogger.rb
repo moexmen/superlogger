@@ -2,9 +2,13 @@ require 'superlogger/version'
 require 'superlogger/logger'
 
 module Superlogger
+  @@enabled = false
+
   module_function
 
   def setup(app)
+    return unless (Rails.env.production? || enabled)
+    
     insert_superlogger_middleware(app)
     detach_existing_log_subscribers
     attach_superlogger_log_subscribers
@@ -24,7 +28,7 @@ module Superlogger
     require 'action_view/log_subscriber'
 
     # remove log subscribers
-    patterns = %w(sql.active_record
+    remove_patterns = %w(sql.active_record
                   start_processing.action_controller
                   process_action.action_controller
                   render_template.action_view
@@ -32,8 +36,11 @@ module Superlogger
                   render_collection.action_view)
 
     ActiveSupport::LogSubscriber.log_subscribers.each do |subscriber|
-      subscriber.patterns.each do |pattern|
-        ActiveSupport::Notifications.unsubscribe pattern if patterns.include?(pattern)
+      patterns = subscriber.patterns
+      patterns = patterns.is_a?(Hash) ? patterns.keys : patterns
+
+      patterns.each do |pattern|
+        ActiveSupport::Notifications.unsubscribe pattern if remove_patterns.include?(pattern)
       end
     end
   end
@@ -49,7 +56,7 @@ module Superlogger
   end
 
   def session_id
-    RequestStore.store[:superlogger_session_id] || "NS-#{Thread.current.object_id}"
+    RequestStore.store[:superlogger_session_id]
   end
 
   def request_id=(request_id)
@@ -57,7 +64,15 @@ module Superlogger
   end
 
   def request_id
-    RequestStore.store[:superlogger_request_id] || "NR-#{Thread.current.object_id}"
+    RequestStore.store[:superlogger_request_id]
+  end
+
+  def enabled=(enabled)
+    @@enabled=enabled
+  end
+
+  def enabled
+    @@enabled
   end
 end
 
