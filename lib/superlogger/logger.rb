@@ -2,26 +2,25 @@ require 'request_store'
 
 module Superlogger
   class Logger < ActiveSupport::Logger
-    def initialize(*args)
-      super
-      @formatter = SimpleFormatter.new
-    end
-
     def format_message(severity, time, _progname, msg)
       return nil if msg.blank? # Silence nil and empty msg
       return nil if is_rails_rack_logger_msg?(msg) # Silence rack logger msg
 
-      timestamp = time.strftime('%Y-%m-%d %H:%M:%S.%L')
-      session_id = Superlogger.session_id[0..11]
-      request_id = Superlogger.request_id[0..11]
-      severity = severity.to_s.upcase[0]
-      caller_location = get_caller_location
-      args = format_args(msg)
+      msg = {msg: msg} unless msg.is_a?(Hash)
 
-      "#{timestamp} | #{session_id} | #{request_id} | #{severity} | #{caller_location} | #{args}\n"
+      h = {}
+      h[:level] = severity.downcase
+      h[:ts] = time.to_f
+      h[:caller] = get_caller_location
+      h[:session_id] = Superlogger.session_id[0..11] unless Superlogger.session_id.nil?
+      h[:request_id] = Superlogger.request_id unless Superlogger.request_id.nil?
+      h.merge!(msg)
+
+      h.to_json + "\n"
     end
 
     def is_rails_rack_logger_msg?(msg)
+      return false unless msg.is_a?(String)
       msg =~ /Started (GET|POST|PUT|PATCH|DELETE)/
     end
 
@@ -30,23 +29,10 @@ module Superlogger
       location = caller_locations(index, 1).first
 
       # Extract filename without file extension from location.path
-      # eg. superlogger/lib/superlogger/logger.rb
-      file = location.path.split('/').last.split('.').first
+      # eg. superlogger/lib/superlogger/logger.rb => superlogger/logger
+      file = location.path.split('/').last(2).join('/').split('.').first
 
       "#{file}:#{location.lineno}"
-    end
-
-    def format_args(args)
-      output = if args.is_a?(Hash)
-                 # Format args in key=value pair, separated by pipes
-                 args.map do |key, value|
-                   "#{key}=#{value}"
-                 end.join(' | ')
-               else
-                 args.to_s
-               end
-
-      output.gsub("\n", '\\n') # Escape newlines
     end
 
     # To silence double logging when running `rails server` in development mode

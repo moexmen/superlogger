@@ -18,10 +18,12 @@ module Superlogger
       payload = event.payload
       return if IGNORE_PAYLOAD_NAMES.include?(payload[:name])
 
-      sql = payload[:sql]
-      params = payload[:binds].map { |_, value| value.to_s }
+      logger.debug do
+        sql = payload[:sql]
+        params = payload[:binds].map { |b| b.value.to_s }
 
-      logger.debug sql: sql, params: params, duration: event.duration.round(2)
+        { sql: sql, params: params, duration: event.duration.round(2) }
+      end
     end
   end
 end

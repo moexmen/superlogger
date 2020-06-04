@@ -6,7 +6,7 @@ module Superlogger
 
     def call(env)
       request = ActionDispatch::Request.new(env)
-
+      
       if request.path.start_with?('/assets/') == false
         process_request(request) { @app.call(env) }
       else
@@ -18,18 +18,18 @@ module Superlogger
       setup_logging(request)
 
       # Start of request
-      Rails.logger.info method: request.method, path: request.fullpath, ip: request.ip
+      Rails.logger.info method: request.method, path: request.fullpath
 
       t1 = Time.now
-      result = yield
+      status, _headers, _response = yield
     ensure
       t2 = Time.now
 
       # End of request
       duration = ((t2 - t1) * 1000).to_f.round(2)
-      Rails.logger.info method: request.method, path: request.fullpath, total_duration: duration
+      Rails.logger.info method: request.method, path: request.fullpath, response_time: duration, status: status
 
-      result
+      [status, _headers, _response]
     end
 
     def setup_logging(request)
@@ -38,7 +38,7 @@ module Superlogger
         request.env['rack.session'].send(:load!) unless request.env['rack.session'].id
 
         # Store session id before any actual logging is done
-        Superlogger.session_id = request.env['rack.session'].id
+        Superlogger.session_id = request.env['rack.session'].id.to_s
       end
 
       Superlogger.request_id = request.uuid.try(:gsub, '-', '')
