@@ -23,7 +23,7 @@ module Superlogger
       t1 = Time.now
       status, _headers, _response = yield
     rescue => e
-      Rails.logger.warn error: e
+      Rails.logger.debug error: e
     ensure
       t2 = Time.now
 
