@@ -34,9 +34,6 @@ module Superlogger
 
     def setup_logging(request)
       if request.env['rack.session']
-        # Session is lazy loaded. Force session to load if it is not already loaded.
-        request.env['rack.session'].send(:load!) unless request.env['rack.session'].id
-
         # Store session id before any actual logging is done
         Superlogger.session_id = request.env['rack.session'].id.to_s
       end
