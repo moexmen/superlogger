@@ -35,7 +35,9 @@ module Superlogger
     def setup_logging(request)
       if request.env['rack.session']
         # Store session id before any actual logging is done
-        Superlogger.session_id = request.env['rack.session'].id.to_s
+        if request.env['rack.session'].id
+          Superlogger.session_id = request.env['rack.session'].id.to_s
+        end
       end
 
       Superlogger.request_id = request.uuid.try(:gsub, '-', '')
