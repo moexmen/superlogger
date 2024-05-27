@@ -1,7 +1,10 @@
 module Superlogger
   class SuperloggerMiddleware
-    def initialize(app)
+    def initialize(app, options = {})
       @app = app
+      @options = {
+        log_extra_fields: ->(_request) { {} }
+      }.merge(options)
     end
 
     def call(env)
@@ -27,7 +30,7 @@ module Superlogger
 
       # End of request
       duration = ((t2 - t1) * 1000).to_f.round(2)
-      Rails.logger.info method: request.method, path: request.fullpath, response_time: duration, status: status
+      Rails.logger.info method: request.method, path: request.fullpath, response_time: duration, status: status, **@options[:log_extra_fields].call(request)
 
       [status, _headers, _response]
     end
