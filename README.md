@@ -72,3 +72,11 @@ Rails.logger.info "Meatball"
 - `request_id` = 32 characters
 - `msg` = If values given is not a hash, it is treated as `{"msg":<value>"}`
 - All duration related fields are in milliseconds
+
+## Testing ##
+
+To run the tests for Superlogger:
+
+```sh
+rake test
+```
