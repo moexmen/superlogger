@@ -12,6 +12,7 @@ gemspec
 
 group :development, :test do
   gem 'byebug'
+  gem 'rails', '~> 6'
   gem 'sqlite3', '~> 1.4'
 end
 

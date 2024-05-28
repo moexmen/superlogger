@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     superlogger (1.0.1)
-      rails (~> 6)
+      rails
       request_store
 
 GEM
@@ -186,6 +186,7 @@ PLATFORMS
 
 DEPENDENCIES
   byebug
+  rails (~> 6)
   sqlite3 (~> 1.4)
   superlogger!
 
