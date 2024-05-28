@@ -69,11 +69,10 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert_equal Time.at(output[0]["ts"]).to_date, Date.today
   end
 
-  # TODO: To be fixed in a later PR due to a subtle bug in handling of sessions.
-  # test 'with session_id' do
-  #   env = request('home/index')
-  #   assert_match env['rack.session'].id.to_s[0..11], output[0]["session_id"]
-  # end
+  test 'with session_id' do
+    env = request('home/index_with_session')
+    assert_match env['rack.session'].id.to_s[0..11], output[4]["session_id"]
+  end
 
   test 'without session_id' do
     Rails.logger.debug var: 'test'
