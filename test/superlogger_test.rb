@@ -36,10 +36,31 @@ class SuperloggerTest < ActiveSupport::TestCase
   test 'log format when session is not loaded' do
     request('home/index')
 
-    fields = output.first
+    fields = output[4]
     assert fields.key?("level")
     assert fields.key?("ts")
     assert fields.key?("caller")
+    assert_equal fields.key?("session_id"), false
+    assert fields.key?("request_id")
+  end
+
+  test 'log format when session is loaded' do
+    request('home/index_with_session')
+
+    # Session is not loaded before the request is processed.
+    fields = output[0]
+    assert fields.key?("level")
+    assert fields.key?("ts")
+    assert fields.key?("caller")
+    assert_equal fields.key?("session_id"), false
+    assert fields.key?("request_id")
+
+    # Session is loaded after the request is processed.
+    fields = output[4]
+    assert fields.key?("level")
+    assert fields.key?("ts")
+    assert fields.key?("caller")
+    assert fields.key?("session_id")
     assert fields.key?("request_id")
   end
 
@@ -48,11 +69,10 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert_equal Time.at(output[0]["ts"]).to_date, Date.today
   end
 
-  # TODO: To be fixed in a later PR due to a subtle bug in handling of sessions.
-  # test 'with session_id' do
-  #   env = request('home/index')
-  #   assert_match env['rack.session'].id.to_s[0..11], output[0]["session_id"]
-  # end
+  test 'with session_id' do
+    env = request('home/index_with_session')
+    assert_match env['rack.session'].id.to_s[0..11], output[4]["session_id"]
+  end
 
   test 'without session_id' do
     Rails.logger.debug var: 'test'
