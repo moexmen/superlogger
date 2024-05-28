@@ -36,10 +36,31 @@ class SuperloggerTest < ActiveSupport::TestCase
   test 'log format when session is not loaded' do
     request('home/index')
 
-    fields = output.first
+    fields = output[4]
     assert fields.key?("level")
     assert fields.key?("ts")
     assert fields.key?("caller")
+    assert_equal fields.key?("session_id"), false
+    assert fields.key?("request_id")
+  end
+
+  test 'log format when session is loaded' do
+    request('home/index_with_session')
+
+    # Session is not loaded before the request is processed.
+    fields = output[0]
+    assert fields.key?("level")
+    assert fields.key?("ts")
+    assert fields.key?("caller")
+    assert_equal fields.key?("session_id"), false
+    assert fields.key?("request_id")
+
+    # Session is loaded after the request is processed.
+    fields = output[4]
+    assert fields.key?("level")
+    assert fields.key?("ts")
+    assert fields.key?("caller")
+    assert fields.key?("session_id")
     assert fields.key?("request_id")
   end
 
