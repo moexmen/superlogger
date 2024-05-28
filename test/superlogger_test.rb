@@ -115,11 +115,11 @@ class SuperloggerTest < ActiveSupport::TestCase
   test 'action_view_log_subscriber.render_template.render_partial.render_collection' do
     request('home/index')
 
-    fields = output[3]
+    fields = output[4]
     assert_match 'partial.html.erb', fields["view"]
     assert fields.key?("duration")
 
-    fields = output[4]
+    fields = output[5]
     assert_match 'index.html.erb', fields["view"]
     assert fields.key?("duration")
   end
