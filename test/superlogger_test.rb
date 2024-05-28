@@ -108,7 +108,7 @@ class SuperloggerTest < ActiveSupport::TestCase
   test 'action_controller_log_subscriber.process_action' do
     request('home/index')
 
-    fields = output[5]
+    fields = output[7]
     assert_operator fields["view_duration"], :>, 0
     assert_operator fields["db_duration"], :>, 0
   end
