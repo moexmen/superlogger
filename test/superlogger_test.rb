@@ -33,14 +33,13 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert_not_nil Superlogger::VERSION
   end
 
-  test 'log format' do
+  test 'log format when session is not loaded' do
     request('home/index')
 
     fields = output.first
     assert fields.key?("level")
     assert fields.key?("ts")
     assert fields.key?("caller")
-    assert fields.key?("session_id")
     assert fields.key?("request_id")
   end
 
