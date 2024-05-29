@@ -73,6 +73,17 @@ Rails.logger.info "Meatball"
 - `msg` = If values given is not a hash, it is treated as `{"msg":<value>"}`
 - All duration related fields are in milliseconds
 
+To log additional fields that are available on the `ActionDispatch::Request` object, set in `config/application.rb`:
+```ruby
+Superlogger.log_extra_fields = lambda do |request|
+  # Return a hash of extra fields to log.
+  {
+    user_id: request.session[:current_user].id,
+    ip: request.ip
+  }
+end
+```
+
 ## Testing ##
 
 To run the tests for Superlogger:
