@@ -75,7 +75,7 @@ Rails.logger.info "Meatball"
 
 To log additional fields that are available on the `ActionDispatch::Request` object, set in `config/application.rb`:
 ```ruby
-Superlogger.log_extra_fields = lambda do |request|
+Superlogger.include_log_fields = lambda do |request|
   # Return a hash of extra fields to log.
   {
     user_id: request.session[:current_user].id,

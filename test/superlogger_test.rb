@@ -64,7 +64,7 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert fields.key?("request_id")
   end
 
-  # The extra fields to log are defined in `/test/dummy/config/application.rb`.
+  # The additional fields to log are defined in `/test/dummy/config/application.rb`.
   # Unfortunately, because `Superlogger::SuperloggerMiddleware` is initialised
   # together with the Rails application, and because we cannot programmatically
   # reinitialise the Rails application or run multiple instances of it, we are
@@ -74,11 +74,11 @@ class SuperloggerTest < ActiveSupport::TestCase
   # This effectively means that we are unable to change the Superlogger settings
   # in the Rails application configuration on a per-test basis. For the sake of
   # testing, we choose the Superlogger settings that let us test the presence of
-  # behaviours and set the extra fields to log.
-  test 'log format when logging extra fields' do
+  # behaviours and set the additional fields to log.
+  test 'log format when logging additional fields' do
     request('home/index_with_session')
 
-    # Extra fields are not logged before the request is processed.
+    # Additional fields are not logged before the request is processed.
     fields = output[0]
     assert fields.key?("level")
     assert fields.key?("ts")
@@ -88,7 +88,7 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert_equal fields.key?("current_time"), false
     assert_equal fields.key?("hello"), false
 
-    # Extra fields are logged after the request is processed.
+    # Additional fields are logged after the request is processed.
     fields = output[4]
     assert fields.key?("level")
     assert fields.key?("ts")

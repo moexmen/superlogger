@@ -24,7 +24,7 @@ module Dummy
     Superlogger.enabled = true
     config.logger = Superlogger::Logger.new(STDOUT)
 
-    Superlogger.log_extra_fields = lambda do |request|
+    Superlogger.include_log_fields = lambda do |request|
       session = request.session
       {
         current_time: session[:current_time],

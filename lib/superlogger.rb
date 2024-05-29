@@ -3,7 +3,7 @@ require 'superlogger/logger'
 
 module Superlogger
   @@enabled = false
-  @@log_extra_fields = nil
+  @@include_log_fields = nil
 
   module_function
 
@@ -20,7 +20,7 @@ module Superlogger
 
     # important to insert after session middleware so we can get the session id
     app.middleware.use Superlogger::SuperloggerMiddleware, {
-      log_extra_fields: @@log_extra_fields
+      include_log_fields: @@include_log_fields
     }.compact
   end
 
@@ -78,12 +78,12 @@ module Superlogger
     @@enabled
   end
 
-  def log_extra_fields=(log_extra_fields)
-    @@log_extra_fields=log_extra_fields
+  def include_log_fields=(include_log_fields)
+    @@include_log_fields=include_log_fields
   end
 
-  def log_extra_fields
-    @@log_extra_fields
+  def include_log_fields
+    @@include_log_fields
   end
 end
 
