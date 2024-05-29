@@ -33,10 +33,30 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert_not_nil Superlogger::VERSION
   end
 
-  test 'log format' do
+  test 'log format when session is not loaded' do
     request('home/index')
 
-    fields = output.first
+    fields = output[4]
+    assert fields.key?("level")
+    assert fields.key?("ts")
+    assert fields.key?("caller")
+    assert_equal fields.key?("session_id"), false
+    assert fields.key?("request_id")
+  end
+
+  test 'log format when session is loaded' do
+    request('home/index_with_session')
+
+    # Session is not loaded before the request is processed.
+    fields = output[0]
+    assert fields.key?("level")
+    assert fields.key?("ts")
+    assert fields.key?("caller")
+    assert_equal fields.key?("session_id"), false
+    assert fields.key?("request_id")
+
+    # Session is loaded after the request is processed.
+    fields = output[4]
     assert fields.key?("level")
     assert fields.key?("ts")
     assert fields.key?("caller")
@@ -50,8 +70,8 @@ class SuperloggerTest < ActiveSupport::TestCase
   end
 
   test 'with session_id' do
-    env = request('home/index')
-    assert_match env['rack.session'].id.to_s[0..11], output[0]["session_id"]
+    env = request('home/index_with_session')
+    assert_match env['rack.session'].id.to_s[0..11], output[4]["session_id"]
   end
 
   test 'without session_id' do
@@ -108,7 +128,7 @@ class SuperloggerTest < ActiveSupport::TestCase
   test 'action_controller_log_subscriber.process_action' do
     request('home/index')
 
-    fields = output[5]
+    fields = output[7]
     assert_operator fields["view_duration"], :>, 0
     assert_operator fields["db_duration"], :>, 0
   end
@@ -116,11 +136,11 @@ class SuperloggerTest < ActiveSupport::TestCase
   test 'action_view_log_subscriber.render_template.render_partial.render_collection' do
     request('home/index')
 
-    fields = output[3]
+    fields = output[4]
     assert_match 'partial.html.erb', fields["view"]
     assert fields.key?("duration")
 
-    fields = output[4]
+    fields = output[5]
     assert_match 'index.html.erb', fields["view"]
     assert fields.key?("duration")
   end
