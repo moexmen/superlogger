@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    superlogger (1.0.1)
+    superlogger (1.0.2)
       rails
       request_store
 
