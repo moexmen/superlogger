@@ -3,6 +3,7 @@ require 'superlogger/logger'
 
 module Superlogger
   @@enabled = false
+  @@include_log_fields = nil
 
   module_function
 
@@ -18,7 +19,9 @@ module Superlogger
     require 'superlogger/superlogger_middleware'
 
     # important to insert after session middleware so we can get the session id
-    app.middleware.use Superlogger::SuperloggerMiddleware
+    app.middleware.use Superlogger::SuperloggerMiddleware, {
+      include_log_fields: @@include_log_fields
+    }.compact
   end
 
   def detach_existing_log_subscribers
@@ -73,6 +76,14 @@ module Superlogger
 
   def enabled
     @@enabled
+  end
+
+  def include_log_fields=(include_log_fields)
+    @@include_log_fields=include_log_fields
+  end
+
+  def include_log_fields
+    @@include_log_fields
   end
 end
 

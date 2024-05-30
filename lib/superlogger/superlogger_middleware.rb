@@ -1,7 +1,10 @@
 module Superlogger
   class SuperloggerMiddleware
-    def initialize(app)
+    def initialize(app, options = {})
       @app = app
+      @options = {
+        include_log_fields: ->(_request) { {} }
+      }.merge(options)
     end
 
     def call(env)
@@ -33,7 +36,7 @@ module Superlogger
       # was processed. As such, we need to setup the session ID again.
       setup_session_id_for_logging(request)
 
-      Rails.logger.info method: request.method, path: request.fullpath, response_time: duration, status: status
+      Rails.logger.info method: request.method, path: request.fullpath, response_time: duration, status: status, **@options[:include_log_fields].call(request)
 
       [status, _headers, _response]
     end

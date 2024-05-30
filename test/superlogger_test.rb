@@ -64,6 +64,41 @@ class SuperloggerTest < ActiveSupport::TestCase
     assert fields.key?("request_id")
   end
 
+  # The additional fields to log are defined in `/test/dummy/config/application.rb`.
+  # Unfortunately, because `Superlogger::SuperloggerMiddleware` is initialised
+  # together with the Rails application, and because we cannot programmatically
+  # reinitialise the Rails application or run multiple instances of it, we are
+  # only able to test a single Superlogger configuration. Once the Rails
+  # application is initialised, the middleware stack cannot be changed.
+  #
+  # This effectively means that we are unable to change the Superlogger settings
+  # in the Rails application configuration on a per-test basis. For the sake of
+  # testing, we choose the Superlogger settings that let us test the presence of
+  # behaviours and set the additional fields to log.
+  test 'log format when logging additional fields' do
+    request('home/index_with_session')
+
+    # Additional fields are not logged before the request is processed.
+    fields = output[0]
+    assert fields.key?("level")
+    assert fields.key?("ts")
+    assert fields.key?("caller")
+    assert_equal fields.key?("session_id"), false
+    assert fields.key?("request_id")
+    assert_equal fields.key?("current_time"), false
+    assert_equal fields.key?("hello"), false
+
+    # Additional fields are logged after the request is processed.
+    fields = output[4]
+    assert fields.key?("level")
+    assert fields.key?("ts")
+    assert fields.key?("caller")
+    assert fields.key?("session_id")
+    assert fields.key?("request_id")
+    assert fields.key?("current_time")
+    assert fields.key?("hello")
+  end
+
   test 'timestamp' do
     request('home/index')
     assert_equal Time.at(output[0]["ts"]).to_date, Date.today

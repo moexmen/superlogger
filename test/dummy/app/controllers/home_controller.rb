@@ -4,7 +4,8 @@ class HomeController < ApplicationController
   end
 
   def index_with_session
-    session[:force_load_session] = 'By writing to it'
+    # Force load session by writing to it.
+    session[:current_time] = Time.now
     redirect_to action: :index
   end
 end
