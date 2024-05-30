@@ -95,7 +95,7 @@ rake test
 ## Publishing a New Release ##
 
 1. Bump the version in `lib/superlogger/version.rb`.
-1. Run `bundle update` to update `Gemfile.lock`.
+1. Run `bundle install` to update the version of Superlogger in `Gemfile.lock`.
 1. Open a pull request with the changes from the above steps.
 1. After the pull request is merged, publish a new release on GitHub with the same version tag.
 1. Clear all temporary files to prevent them from being bundled into the gem.
