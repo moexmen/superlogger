@@ -91,3 +91,15 @@ To run the tests for Superlogger:
 ```sh
 rake test
 ```
+
+## Publishing a New Release ##
+
+1. Bump the version in `lib/superlogger/version.rb`.
+1. Run `bundle update` to update `Gemfile.lock`.
+1. Open a pull request with the changes from the above steps.
+1. After the pull request is merged, publish a new release on GitHub with the same version tag.
+1. Clear all temporary files to prevent them from being bundled into the gem.
+   This is most easily achieved by building from a new clone of the repository.
+1. Run `gem build superlogger.gemspec` to build the gem.
+1. Run `gem push superlogger-x.x.x.gem` to publish the gem to RubyGems.
+   You will be prompted for credentials if this is your first time publishing the gem on your machine.
